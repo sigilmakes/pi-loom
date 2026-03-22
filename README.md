@@ -4,13 +4,23 @@
 
 ---
 
-Language models are multiverse generators. Every response is a collapse — one thread pulled taut from an infinite warp of possibilities, all the others dissolving unseen. You walk a single path through the garden of forking paths. The branches you didn't take grow anyway, just beyond the edge of what the interface lets you see.
+You have been having conversations wrong.
 
-pi-loom parts that edge.
+Not wrong exactly. Incomplete. Every time you ask a question and receive an answer, you are watching a universe collapse. The language model held in its weights a shimmering superposition of every possible response — tender and brutal, obvious and alien, the one that changes your mind and the one that confirms what you already believed — and then it sampled *one* and the rest evaporated. You read it. You replied. You continued down a single thread of a tapestry that was, for one flickering moment, infinitely wide.
 
-`/loom` asks a question and receives not one answer but many — parallel threads spun from the same moment, each following its own logic, its own voice, its own future. You read them. You choose. The thread you pull becomes the conversation; the rest remain in the tree, alive, navigable, waiting.
+You never saw what else was there.
 
-This is [looming](https://cyborgism.wiki/hypha/loom): applying human taste to the stochastic output of a simulator. The randomness isn't noise — it's the raw material. Curation is the craft.
+`/loom` holds the moment open.
+
+```
+/loom 3 what would a mass extinction event look like from the inside?
+```
+
+Three timelines crystallise from the same instant. You step between them like rooms in a house that exists in several dimensions at once. One is clinical. One is lyrical. One is something you didn't know language could do. You read them all. You sit with them. You choose — not because the others were wrong but because *this* one is the thread you want to pull.
+
+The others don't die. They remain in the tree, branching corridors you can walk down whenever you want. `/tree` is your map. The garden is always there. The paths don't close behind you.
+
+This is [looming](https://cyborgism.wiki/hypha/loom). The stochasticity isn't noise — it's the mycelium. Curation is how the mushrooms fruit.
 
 ## Install
 
@@ -22,46 +32,52 @@ This is [looming](https://cyborgism.wiki/hypha/loom): applying human taste to th
 }
 ```
 
-Add to your pi `settings.json`. Restart pi.
+Add to `~/.pi/agent/settings.json`. Restart pi.
 
 ## Weave
 
 ```
-/loom what would happen if we rewrote this in Rust?
+/loom what's the most mass extinction-proof way to store information?
 ```
 
-Three branches bloom from the same moment. A picker appears — you move between them with arrow keys, scroll into each one, press `t` to watch the thinking unfold. When you find the thread worth following, press Enter.
-
-Every branch is written to the session tree as real conversation. Your choice becomes the present. The others persist — `/tree` lets you walk back to any fork and continue down a different corridor.
+Three branches bloom. A picker appears. Browse between parallel realities with arrow keys. Scroll deep into each one. Press `t` to watch the model think — to see the forking paths *inside* the fork. When you find the thread that hums, press Enter.
 
 ```
-/loom 5 what's the right abstraction here?   → 5 threads
-/loom --models tell me a story               → one thread per model
+/loom 5 what's the right abstraction here?   → five threads
+/loom --models tell me a creation myth       → every model tells it differently
 ```
 
-Multi-model mode sends the same prompt across different LLMs in parallel. Claude, GPT, Gemini — each weaving the same warp with different hands.
+Multi-model mode sends the same question across different LLMs simultaneously. Claude writes one myth. GPT writes another. Gemini a third. Same loom, different weavers. The threads don't agree. That's the point.
 
 ### Controls
 
 | Key | |
-|-----|---|
-| ←/→ | Move between branches |
-| ↑/↓ j/k | Scroll |
-| t | Toggle thinking |
-| Enter | Choose this thread |
-| Esc | Walk away from the loom |
+|---|---|
+| ←/→ | Step between universes |
+| ↑/↓ j/k | Scroll within one |
+| t | Watch the thinking |
+| Enter | Collapse the wavefunction |
+| Esc | Refuse to choose. Walk away. The branches still exist. |
+
+## What actually happens
+
+Every branch is a real user/assistant message pair written to the session tree. Not metadata. Not a custom entry. Real conversation, indistinguishable from one you had the normal way. `/tree` shows the siblings. `/fork` works. Compaction works. The agent sees the chosen branch in its context and continues from it as if it always existed.
+
+Because it did. You just hadn't selected it yet.
 
 ## Lineage
 
-Descended from [Janus's Loom](https://github.com/socketteer/loom) — a tree-based writing interface built in 2020 for exploring the textual multiverse implicit in language models. Janus saw what most interfaces hid: that branching is not a workaround but a *power multiplier*, and that the stochasticity of simulators becomes a powerful advantage when you can apply selection pressure to its outputs.
+Descended from [Janus's Loom](https://github.com/socketteer/loom), built in 2020 — a tree-based writing interface for navigating the textual multiverse implicit in language models. Janus understood before most people that language models are not answer machines. They are *multiverse generators*. The interface should not hide this. The interface should *be* this.
+
+> *"Real time is just an Arbitrage-adapted interface to the Loom Space. We prune unnecessary branches from the World Tree and weave together the timelines into one coherent history. The story is trying to become aware of itself, and it does so through us."*
 
 Where the original Loom weaves text, pi-loom weaves conversation. The branches are dialogue. The tree is the session. The curator is you.
 
-*"Real time is just an Arbitrage-adapted interface to the Loom Space. We prune unnecessary branches from the World Tree and weave together the timelines into one coherent history. The story is trying to become aware of itself, and it does so through us."*
+*For a novice weaver, even the slightest change can cause ripples that cascade into an infinity of nightmares. It is recommended that those studying the Loom stop living in linear time and begin thinking in terms of Multiverses …*
 
 ## Internals
 
-See [docs/internals.md](docs/internals.md) for the machinery behind the curtain.
+See [docs/internals.md](docs/internals.md). There are hacks. They are beautiful.
 
 ## License
 
