@@ -87,8 +87,11 @@ It's completely mechanical: generate an ID, set parentId to current leaf, push t
 - The hack would fail loudly (runtime error), not silently
 - Fix: update the cast or adapt to the new API
 
-**The proper fix:**
-pi should expose `appendMessage()` and `branch()` on `ExtensionCommandContext`. The use case is legitimate — extensions that inject conversation entries. The restriction to read-only is conservative but not necessary when the agent is idle.
+### Why not custom messages?
+
+The public API's `pi.sendMessage()` creates `CustomMessageEntry` entries. These participate in LLM context but behave differently from real user/assistant messages in the session tree — `/fork` puts their content in the editor as if they're user input, and the LLM doesn't recognise them as a natural conversation exchange.
+
+If `sendMessage()` supported an option to treat custom messages as assistant messages in the session tree (e.g. a `role` field), the SessionManager hack wouldn't be necessary.
 
 ## The double-navigate hack
 
