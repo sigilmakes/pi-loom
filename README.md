@@ -66,8 +66,13 @@ Only models with configured API keys are used. Different endpoints don't rate-li
 ## Known limitations
 
 - Sequential generation for same-model branches (parallel hits rate limits). ~10-30s for 3 branches depending on model.
-- Uses `SessionManager.appendMessage()` via type cast — not part of the public extension API. May break on pi updates.
+- Reasoning models ignore temperature — diversity comes from sampling randomness only.
 - Empty responses are filtered out. You may get fewer branches than requested.
+- Uses `SessionManager.appendMessage()` via type cast — not part of the public extension API. See [docs/internals.md](docs/internals.md) for details.
+
+## Internals
+
+See [docs/internals.md](docs/internals.md) for how it works under the hood, including the SessionManager hack and why it's necessary.
 
 ## License
 
