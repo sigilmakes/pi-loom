@@ -223,7 +223,7 @@ function writeBranchesToSession(
     prompt: string,
     branches: LoomBranch[],
     chosenIndex: number,
-): void {
+): { branchPoint: string; chosenLeaf: string } {
     // Cast to writable SessionManager — the runtime object has these methods,
     // they're just hidden behind ReadonlySessionManager's Pick type.
     const sm = ctx.sessionManager as unknown as SessionManager;
@@ -271,6 +271,8 @@ function writeBranchesToSession(
             timestamp: Date.now(),
         } as Message);
     }
+
+    return { branchPoint: branchPoint!, chosenLeaf: sm.getLeafId()! };
 }
 
 // ── Extension ────────────────────────────────────────────
@@ -356,16 +358,16 @@ export default function loom(pi: ExtensionAPI) {
             }
 
             // 4. Write all branches as real user/assistant messages
-            writeBranchesToSession(ctx, parsed.prompt, branches, chosen);
+            const { branchPoint, chosenLeaf } = writeBranchesToSession(
+                ctx, parsed.prompt, branches, chosen,
+            );
 
-            // 5. Navigate to the chosen branch to refresh the TUI display.
-            // The leaf is already on the chosen branch (written last),
-            // but the TUI doesn't know about the directly-appended messages.
-            // navigateTree triggers a session_tree event that refreshes the display.
-            const chosenLeaf = ctx.sessionManager.getLeafId();
-            if (chosenLeaf) {
-                await ctx.navigateTree(chosenLeaf, { summarize: false });
-            }
+            // 5. Navigate to refresh the agent's context state.
+            // navigateTree to the current leaf is a no-op, so we navigate
+            // to the branch point first (a real move), then to the chosen leaf.
+            // This forces the interactive mode to fully rebuild its state.
+            await ctx.navigateTree(branchPoint, { summarize: false });
+            await ctx.navigateTree(chosenLeaf, { summarize: false });
 
             const totalCost = branches.reduce((s, b) => s + b.cost, 0);
             ctx.ui.notify(
