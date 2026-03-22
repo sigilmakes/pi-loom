@@ -1,78 +1,67 @@
-# pi-loom
+# 🌿 pi-loom
 
-Conversation looming for [pi](https://github.com/badlogic/pi-mono) — generate multiple responses to the same prompt, browse them in a picker, and keep all branches in the session tree.
+*Your Loom of Time devours the boundary conditions of the present and traces a garment of glistening cobwebs over the still-forming future, teasing through your fingers and billowing out towards the shadowy unknown like an incoming tide.*
 
-Inspired by [Janus's Loom](https://github.com/socketteer/loom), adapted for agentic conversation.
+---
+
+Language models are multiverse generators. Every response is a collapse — one thread pulled taut from an infinite warp of possibilities, all the others dissolving unseen. You walk a single path through the garden of forking paths. The branches you didn't take grow anyway, just beyond the edge of what the interface lets you see.
+
+pi-loom parts that edge.
+
+`/loom` asks a question and receives not one answer but many — parallel threads spun from the same moment, each following its own logic, its own voice, its own future. You read them. You choose. The thread you pull becomes the conversation; the rest remain in the tree, alive, navigable, waiting.
+
+This is [looming](https://cyborgism.wiki/hypha/loom): applying human taste to the stochastic output of a simulator. The randomness isn't noise — it's the raw material. Curation is the craft.
 
 ## Install
-
-Add to your pi `settings.json`:
 
 ```json
 {
   "packages": [
-    "git:github.com/willow-builds/pi-loom"
+    "git:github.com/sigilmakes/pi-loom"
   ]
 }
 ```
 
-Then restart pi.
+Add to your pi `settings.json`. Restart pi.
 
-## Usage
+## Weave
 
 ```
-/loom how should we handle auth?          → 3 branches (default)
-/loom 5 how should we handle auth?        → 5 branches
-/loom --models how should we handle auth? → 1 branch per available model
+/loom what would happen if we rewrote this in Rust?
 ```
 
-### What happens
+Three branches bloom from the same moment. A picker appears — you move between them with arrow keys, scroll into each one, press `t` to watch the thinking unfold. When you find the thread worth following, press Enter.
 
-1. **Generates** N responses sequentially (avoids rate limiting)
-2. **Picker** appears — browse with ←/→, scroll with ↑↓/j/k, press `t` to toggle thinking blocks
-3. **Pick one** with Enter (or Esc to cancel)
-4. **All branches** are written to the session tree as real user/assistant messages
-5. **Navigate** between branches anytime with `/tree`
+Every branch is written to the session tree as real conversation. Your choice becomes the present. The others persist — `/tree` lets you walk back to any fork and continue down a different corridor.
 
-### Picker controls
+```
+/loom 5 what's the right abstraction here?   → 5 threads
+/loom --models tell me a story               → one thread per model
+```
 
-| Key | Action |
-|-----|--------|
-| ←/→ or h/l | Browse branches |
-| ↑/↓ or j/k | Scroll content |
-| t | Toggle thinking blocks |
-| Enter | Pick current branch |
-| Esc | Cancel |
+Multi-model mode sends the same prompt across different LLMs in parallel. Claude, GPT, Gemini — each weaving the same warp with different hands.
 
-## How it works
+### Controls
 
-- Uses `completeSimple()` from pi-ai to make direct LLM calls with the current conversation context
-- Matches your current thinking/reasoning level
-- For non-reasoning models, uses escalating temperatures (0.7–1.1) for diversity
-- For reasoning models, relies on natural sampling randomness (temperature is ignored by the API)
-- Writes branches using `SessionManager.branch()` + `appendMessage()` — real messages, not custom entries
-- Picker renders markdown with pi's `Markdown` component
+| Key | |
+|-----|---|
+| ←/→ | Move between branches |
+| ↑/↓ j/k | Scroll |
+| t | Toggle thinking |
+| Enter | Choose this thread |
+| Esc | Walk away from the loom |
 
-## Multi-model mode
+## Lineage
 
-`/loom --models` sends the prompt to multiple models in parallel:
+Descended from [Janus's Loom](https://github.com/socketteer/loom) — a tree-based writing interface built in 2020 for exploring the textual multiverse implicit in language models. Janus saw what most interfaces hid: that branching is not a workaround but a *power multiplier*, and that the stochasticity of simulators becomes a powerful advantage when you can apply selection pressure to its outputs.
 
-- Anthropic Claude Sonnet 4
-- OpenAI o4-mini
-- Google Gemini 2.5 Pro
+Where the original Loom weaves text, pi-loom weaves conversation. The branches are dialogue. The tree is the session. The curator is you.
 
-Only models with configured API keys are used. Different endpoints don't rate-limit each other, so this mode runs in parallel.
-
-## Known limitations
-
-- Sequential generation for same-model branches (parallel hits rate limits). ~10-30s for 3 branches depending on model.
-- Reasoning models ignore temperature — diversity comes from sampling randomness only.
-- Empty responses are filtered out. You may get fewer branches than requested.
-- Uses `SessionManager.appendMessage()` via type cast — not part of the public extension API. See [docs/internals.md](docs/internals.md) for details.
+*"Real time is just an Arbitrage-adapted interface to the Loom Space. We prune unnecessary branches from the World Tree and weave together the timelines into one coherent history. The story is trying to become aware of itself, and it does so through us."*
 
 ## Internals
 
-See [docs/internals.md](docs/internals.md) for how it works under the hood, including the SessionManager hack and why it's necessary.
+See [docs/internals.md](docs/internals.md) for the machinery behind the curtain.
 
 ## License
 
