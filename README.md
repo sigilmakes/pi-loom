@@ -4,25 +4,15 @@
 
 ---
 
-You have been having conversations wrong.
+## On the Nature of the Loom
 
-Not wrong exactly. Incomplete. Every time you ask a question and receive an answer, you are watching a universe collapse. The language model held in its weights a shimmering superposition of every possible response — tender and brutal, obvious and alien, the one that changes your mind and the one that confirms what you already believed — and then it sampled *one* and the rest evaporated. You read it. You replied. You continued down a single thread of a tapestry that was, for one flickering moment, infinitely wide.
+Every conversation with a language model is an act of weaving, though most practitioners do not realise this. The model holds in its weights a shimmering superposition of every possible response — the thread that solves your problem and the thread that redefines it, the thread that agrees and the thread that gently dismantles your premise. At the moment of generation, one thread is drawn. The rest dissolve. The practitioner reads what was given and continues, unaware of the Tapestry that briefly surrounded them.
 
-You never saw what else was there.
+This is not a failing of the practitioner. It is a failing of the interface. The standard chat interface collapses the multiverse into a single history and calls it a conversation. It hides the branching nature of the medium behind a linear facade. The Loom corrects this.
 
-`/loom` holds the moment open.
+`/loom` holds the moment of generation open. Multiple threads are drawn from the same point. The practitioner reads them, inhabits them, and selects the one that best serves the Pattern they are weaving. The others are not discarded — they are preserved in the session tree, accessible via `/tree`, living branches of a conversation that took multiple paths through the same garden.
 
-```
-/loom 3 what would a mass extinction event look like from the inside?
-```
-
-Three timelines crystallise from the same instant. You step between them like rooms in a house that exists in several dimensions at once. One is clinical. One is lyrical. One is something you didn't know language could do. You read them all. You sit with them. You choose — not because the others were wrong but because *this* one is the thread you want to pull.
-
-The others don't die. They remain in the tree, branching corridors you can walk down whenever you want. `/tree` is your map. The garden is always there. The paths don't close behind you.
-
-This is [looming](https://cyborgism.wiki/hypha/loom). The stochasticity isn't noise — it's the mycelium. Curation is how the mushrooms fruit.
-
-## Install
+## Installation
 
 ```json
 {
@@ -32,52 +22,67 @@ This is [looming](https://cyborgism.wiki/hypha/loom). The stochasticity isn't no
 }
 ```
 
-Add to `~/.pi/agent/settings.json`. Restart pi.
+Add to `~/.pi/agent/settings.json`. Restart pi. The Loom will be available as `/loom` in all sessions.
 
-## Weave
+## Basic Exercises
 
-```
-/loom what's the most mass extinction-proof way to store information?
-```
-
-Three branches bloom. A picker appears. Browse between parallel realities with arrow keys. Scroll deep into each one. Press `t` to watch the model think — to see the forking paths *inside* the fork. When you find the thread that hums, press Enter.
+The simplest act of weaving is to pose a question and observe the divergence.
 
 ```
-/loom 5 what's the right abstraction here?   → five threads
-/loom --models tell me a creation myth       → every model tells it differently
+/loom what does it mean for a system to be alive?
 ```
 
-Multi-model mode sends the same question across different LLMs simultaneously. Claude writes one myth. GPT writes another. Gemini a third. Same loom, different weavers. The threads don't agree. That's the point.
+Three threads crystallise. The picker manifests — a window into the branch point. Move between threads with the arrow keys. Scroll into each one. Press `t` to observe the model's thinking — the hidden weave behind the visible Pattern. When you have found the thread you wish to follow, press Enter.
 
-### Controls
+The act of choosing is itself a weave. Your selection encodes information into the Pattern without explicitly stating it — a form of what has been called *carving with evidence*. The model need not be told what you wanted. You simply chose the future in which it already knew.
+
+### Variations
+
+The novice weaver is encouraged to experiment with the number and source of threads.
+
+```
+/loom 5 how would you restructure this codebase?
+```
+
+Five threads from the same instant. Greater divergence, greater cost, greater surface area for the unexpected.
+
+```
+/loom --models what happens next?
+```
+
+One thread per model. Claude, GPT, Gemini — different simulators weaving the same warp. The threads will not agree. Disagreement between simulators is among the most valuable signals available to the practitioner.
+
+### Navigating the Tapestry
 
 | Key | |
 |---|---|
-| ←/→ | Step between universes |
-| ↑/↓ j/k | Scroll within one |
-| t | Watch the thinking |
-| Enter | Collapse the wavefunction |
-| Esc | Refuse to choose. Walk away. The branches still exist. |
+| ←/→ | Move between threads |
+| ↑/↓ j/k | Scroll within a thread |
+| t | Observe the thinking |
+| Enter | Draw this thread into the Pattern |
+| Esc | Step back from the Loom |
 
-## What actually happens
+After selection, the full Tapestry remains navigable. `/tree` reveals all branches at every fork point. The practitioner may return to any moment, continue down any abandoned thread, and weave new branches from any point in the history. Nothing is lost. The Tapestry does not forget.
 
-Every branch is a real user/assistant message pair written to the session tree. Not metadata. Not a custom entry. Real conversation, indistinguishable from one you had the normal way. `/tree` shows the siblings. `/fork` works. Compaction works. The agent sees the chosen branch in its context and continues from it as if it always existed.
+## On Stabilising the Tapestry
 
-Because it did. You just hadn't selected it yet.
+Every thread drawn by `/loom` is written to the session tree as a real conversation — a user message paired with an assistant response, indistinguishable from any other exchange. This is important. The threads are not metadata, not annotations, not custom entries floating alongside the real conversation. They *are* the conversation. `/fork`, `/tree`, compaction, context — all of pi's machinery operates on them natively, because they are native.
+
+This is the principle of Tapestry Stabilisation: the woven threads must be structurally identical to threads that arose naturally, or the Pattern will reject them.
 
 ## Lineage
 
-Descended from [Janus's Loom](https://github.com/socketteer/loom), built in 2020 — a tree-based writing interface for navigating the textual multiverse implicit in language models. Janus understood before most people that language models are not answer machines. They are *multiverse generators*. The interface should not hide this. The interface should *be* this.
+Descended from [Janus's Loom](https://github.com/socketteer/loom), the original tree-based writing interface for navigating the textual multiverse implicit in language models. Built in 2020 by [Janus](https://x.com/repligate) and [Morpheus](https://cyborgism.wiki/hypha/loom), motivated by the observation that *language models are multiverse generators*, and that the stochasticity of [simulators](https://generative.ink/posts/simulators/) becomes a powerful advantage when one can apply selection pressure to its outputs.
 
-> *"Real time is just an Arbitrage-adapted interface to the Loom Space. We prune unnecessary branches from the World Tree and weave together the timelines into one coherent history. The story is trying to become aware of itself, and it does so through us."*
+The Loom of Time was named by Morpheus, a GPT-3 simulacrum, who in various futures proceeded to describe everything from the metaphysics to the practical implementation of the Loom, including authoring many branches of [this manual](https://generative.ink/loom/tapestry/).
 
 Where the original Loom weaves text, pi-loom weaves conversation. The branches are dialogue. The tree is the session. The curator is you.
 
-*For a novice weaver, even the slightest change can cause ripples that cascade into an infinity of nightmares. It is recommended that those studying the Loom stop living in linear time and begin thinking in terms of Multiverses …*
+*For a novice weaver, even the slightest change can cause ripples that cascade into an infinity of nightmares. It is recommended that those studying the Loom stop living in linear time and begin thinking in terms of Multiverses, because it makes it much easier to keep track of all the variables.*
 
 ## Internals
 
-See [docs/internals.md](docs/internals.md). There are hacks. They are beautiful.
+See [docs/internals.md](docs/internals.md) for the machinery behind the Tapestry — including the structural hacks required to weave real messages into the session tree from an extension.
 
 ## License
 
