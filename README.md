@@ -54,7 +54,13 @@ Five threads from the same instant.
 /loom --models what happens next?
 ```
 
-One thread per model. Claude, GPT, Gemini — different simulators weaving the same warp. The threads will not agree. Disagreement between simulators is among the most valuable signals available to the practitioner.
+One thread per available model — one from each provider with a configured API key, excluding the current model. Different simulators weaving the same warp. The threads will not agree. Disagreement between simulators is among the most valuable signals available to the practitioner.
+
+To choose specific simulators, name them. The Loom will find them by substring:
+
+```
+/loom --models sonnet,o4-mini,gemini what happens next?
+```
 
 ### The Weaver's Hand
 
