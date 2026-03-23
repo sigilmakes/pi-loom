@@ -5,9 +5,10 @@
  * All branches are written to the session tree as real user/assistant messages.
  *
  * Usage:
- *   /loom how should we handle auth?          → 3 branches, current model
- *   /loom 5 how should we handle auth?        → 5 branches, current model
- *   /loom --models how should we handle auth? → 1 branch per available model
+ *   /loom how should we handle auth?                         → 3 branches, current model
+ *   /loom 5 how should we handle auth?                       → 5 branches, current model
+ *   /loom --models how should we handle auth?                → 1 branch per available model
+ *   /loom --models sonnet,o4-mini,gemini how should we...    → specific models (fuzzy match)
  */
 
 import { completeSimple, type AssistantMessage, type Message, type Model, type Api, type ThinkingLevel } from "@mariozechner/pi-ai";
@@ -30,6 +31,7 @@ interface ParsedArgs {
     n: number;
     prompt: string;
     useModels: boolean;
+    modelSpecs: string[]; // empty = all available, non-empty = fuzzy match these
 }
 
 interface FilterResult {
@@ -48,11 +50,19 @@ interface BranchResult {
 function parseArgs(args: string): ParsedArgs {
     let remaining = args.trim();
     let useModels = false;
+    let modelSpecs: string[] = [];
     let n = 3;
 
     if (remaining.startsWith("--models")) {
         useModels = true;
         remaining = remaining.slice("--models".length).trim();
+
+        // Check if next token is a comma-separated model list (no spaces in model specs)
+        const nextToken = remaining.split(/\s+/)[0];
+        if (nextToken && nextToken.includes(",")) {
+            modelSpecs = nextToken.split(",").map((s) => s.trim()).filter(Boolean);
+            remaining = remaining.slice(nextToken.length).trim();
+        }
     }
 
     const numMatch = remaining.match(/^(\d+)\s+/);
@@ -61,7 +71,7 @@ function parseArgs(args: string): ParsedArgs {
         remaining = remaining.slice(numMatch[0].length);
     }
 
-    return { n, prompt: remaining, useModels };
+    return { n, prompt: remaining, useModels, modelSpecs };
 }
 
 // ── Temperature spread ───────────────────────────────────
@@ -109,13 +119,55 @@ function filterBranches(results: BranchResult[]): FilterResult {
     return { branches, dropped };
 }
 
-// ── Branch generation ────────────────────────────────────
+// ── Model resolution ─────────────────────────────────────
 
-const MODEL_CANDIDATES = [
-    ["anthropic", "claude-sonnet-4-20250514"],
-    ["openai", "o4-mini"],
-    ["google", "gemini-2.5-pro-preview-05-06"],
-] as const;
+/** Fuzzy match a spec like "sonnet", "o4-mini", "gemini" against model id/name */
+function modelMatches(model: Model<Api>, spec: string): boolean {
+    const s = spec.toLowerCase();
+    const id = model.id.toLowerCase();
+    const name = (model.name || "").toLowerCase();
+    return id.includes(s) || name.includes(s);
+}
+
+async function resolveModels(
+    ctx: ExtensionCommandContext,
+    specs: string[],
+): Promise<{ model: Model<Api>; apiKey: string }[]> {
+    const available = ctx.modelRegistry.getAvailable();
+    const currentId = ctx.model?.id;
+
+    let candidates: Model<Api>[];
+    if (specs.length > 0) {
+        // Match each spec against available models
+        candidates = [];
+        for (const spec of specs) {
+            const match = available.find((m) => modelMatches(m, spec));
+            if (match && !candidates.some((c) => c.id === match.id)) {
+                candidates.push(match);
+            }
+        }
+    } else {
+        // All available, one per provider, excluding current
+        const seen = new Set<string>();
+        candidates = [];
+        for (const m of available) {
+            if (m.id === currentId) continue;
+            if (seen.has(m.provider)) continue;
+            seen.add(m.provider);
+            candidates.push(m);
+        }
+    }
+
+    // Resolve API keys
+    const results: { model: Model<Api>; apiKey: string }[] = [];
+    for (const model of candidates) {
+        const key = await ctx.modelRegistry.getApiKey(model);
+        if (key) results.push({ model, apiKey: key });
+    }
+    return results;
+}
+
+// ── Branch generation ────────────────────────────────────
 
 function makeBranchResult(
     response: AssistantMessage,
@@ -142,6 +194,7 @@ async function generateBranches(
     prompt: string,
     n: number,
     useModels: boolean,
+    modelSpecs: string[],
     signal: AbortSignal,
     reasoning: ThinkingLevel | undefined,
     onProgress?: (completed: number, total: number) => void,
@@ -161,17 +214,12 @@ async function generateBranches(
     const context = { systemPrompt, messages: contextMessages, tools: [] as any[] };
 
     if (useModels) {
-        const modelsWithKeys: { model: Model<Api>; apiKey: string }[] = [];
-        for (const [provider, modelId] of MODEL_CANDIDATES) {
-            const model = ctx.modelRegistry.find(provider, modelId);
-            if (model) {
-                const key = await ctx.modelRegistry.getApiKey(model);
-                if (key) modelsWithKeys.push({ model, apiKey: key });
-            }
-        }
+        const modelsWithKeys = await resolveModels(ctx, modelSpecs);
 
         if (modelsWithKeys.length === 0) {
-            throw new Error("No models with API keys available");
+            throw new Error(modelSpecs.length > 0
+                ? `No matching models found for: ${modelSpecs.join(", ")}`
+                : "No available models with API keys");
         }
 
         let completed = 0;
@@ -317,6 +365,7 @@ export default function loom(pi: ExtensionAPI) {
                         parsed.prompt,
                         parsed.n,
                         parsed.useModels,
+                        parsed.modelSpecs,
                         loader.signal,
                         reasoning,
                         (completed, total) => {
