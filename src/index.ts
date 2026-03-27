@@ -132,7 +132,7 @@ function modelMatches(model: Model<Api>, spec: string): boolean {
 async function resolveModels(
     ctx: ExtensionCommandContext,
     specs: string[],
-): Promise<{ model: Model<Api>; apiKey: string }[]> {
+): Promise<{ model: Model<Api>; apiKey: string; headers?: Record<string, string> }[]> {
     const available = ctx.modelRegistry.getAvailable();
     const currentId = ctx.model?.id;
 
@@ -159,10 +159,10 @@ async function resolveModels(
     }
 
     // Resolve API keys
-    const results: { model: Model<Api>; apiKey: string }[] = [];
+    const results: { model: Model<Api>; apiKey: string; headers?: Record<string, string> }[] = [];
     for (const model of candidates) {
-        const key = await ctx.modelRegistry.getApiKey(model);
-        if (key) results.push({ model, apiKey: key });
+        const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
+        if (auth.apiKey) results.push({ model, apiKey: auth.apiKey, headers: auth.headers });
     }
     return results;
 }
@@ -224,9 +224,9 @@ async function generateBranches(
 
         let completed = 0;
         const results: BranchResult[] = await Promise.all(
-            modelsWithKeys.map(async ({ model, apiKey }, i) => {
+            modelsWithKeys.map(async ({ model, apiKey, headers }, i) => {
                 try {
-                    const response = await completeSimple(model, context, { apiKey, signal, reasoning });
+                    const response = await completeSimple(model, context, { apiKey, headers, signal, reasoning });
                     completed++;
                     onProgress?.(completed, modelsWithKeys.length);
                     return makeBranchResult(response, i, model.name || model.id, undefined);
@@ -239,8 +239,8 @@ async function generateBranches(
         );
         return filterBranches(results);
     } else {
-        const apiKey = await ctx.modelRegistry.getApiKey(ctx.model!);
-        if (!apiKey) throw new Error("No API key for current model");
+        const auth = await ctx.modelRegistry.getApiKeyAndHeaders(ctx.model!);
+        if (!auth.apiKey) throw new Error("No API key for current model");
 
         const isReasoning = ctx.model!.reasoning;
         const temperatures = isReasoning
@@ -251,7 +251,7 @@ async function generateBranches(
         for (let i = 0; i < temperatures.length; i++) {
             const temp = temperatures[i];
             try {
-                const opts: Record<string, unknown> = { apiKey, signal, reasoning };
+                const opts: Record<string, unknown> = { apiKey: auth.apiKey, headers: auth.headers, signal, reasoning };
                 if (temp !== undefined) opts.temperature = temp;
                 const response = await completeSimple(ctx.model!, context, opts as any);
                 results.push(makeBranchResult(response, i, ctx.model!.name || ctx.model!.id, temp));
